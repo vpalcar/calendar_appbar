@@ -1,8 +1,7 @@
 name: calendar_appbar
-description: 
+description: Flutter package for custom AppBar with calendar view.
 version: 0.0.1
-author: Vid Palčar
-homepage: 
+repository: https://github.com/vpalcar/calendar_appbar
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
