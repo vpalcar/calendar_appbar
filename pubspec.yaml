@@ -2,7 +2,7 @@ name: calendar_appbar
 description: 
 version: 0.0.1
 author: Vid Palčar
-homepage: Package for Flutter AppBar with Calendar
+homepage: 
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: CalendarAppBar(
         onDateChanged: (value) => setState(() => selectedDate = value),
-        startDate: DateTime.now().subtract(Duration(days: 140)),
+        firstDate: DateTime.now().subtract(Duration(days: 140)),
         lastDate: DateTime.now(),
         events: List.generate(
             100,
