@@ -1,8 +1,12 @@
-# example
+# Calendar AppBar Example App
 
-A new Flutter project.
+This is offical AppBar Example App developed by Vid Palčar.
 
-## Getting Started
+## Documentation and Source Code
+
+For documentation and source code visit [repository](https://github.com/vpalcar/calendar_appbar).
+
+## Getting Started with Flutter
 
 This project is a starting point for a Flutter application.
 
