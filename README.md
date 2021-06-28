@@ -21,7 +21,7 @@ Add to pubspec.yaml:
 
 ```yaml
 dependencies:
-  calendar_appbar: ^0.0.1
+  calendar_appbar: ^0.0.3
 ```
 
 Then import it to your project:
