@@ -23,7 +23,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  DateTime selectedDate;
+  DateTime? selectedDate;
   Random random = new Random();
 
   @override

@@ -1,27 +1,38 @@
 library calendar_appbar;
 
+//adding necesarry packages
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-//import 'package:flutter/services.dart';
 
+//Code starts here
 class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final Color accent;
-  final Color white;
-  final Color black;
-  final DateTime lastDate;
+  //accent color of UI
+  final Color? accent;
+  //definiton of your specific shade of white
+  final Color? white;
+  //definiton of your specific shade of black
+  final Color? black;
+  //the last date shown on the calendar
+  final DateTime? lastDate;
+  //the first date shown on the calendar
   final DateTime firstDate;
-  final List<DateTime> events;
+  //list of dates with specific event (shown as a dot above the date)
+  final List<DateTime>? events;
+  //function which returns currently selected date
   final Function onDateChanged;
-  final double padding;
-  final bool fullCalendar;
-  final bool backButton;
+  //definition of your custom padding
+  final double? padding;
+  //definition of the atribute which shows full calendar view when pressing on date
+  final bool? fullCalendar;
+  //[backButton] shows BackButton in set to true
+  final bool? backButton;
 
   CalendarAppBar({
-    Key key,
-    @required this.lastDate,
-    @required this.firstDate,
-    @required this.onDateChanged,
+    Key? key,
+    required this.lastDate,
+    required this.firstDate,
+    required this.onDateChanged,
     this.events,
     this.fullCalendar,
     this.backButton,
@@ -39,17 +50,18 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CalendarAppBarState extends State<CalendarAppBar> {
-  DateTime selectedDate;
-  int position;
-  DateTime referenceDate;
+  DateTime? selectedDate;
+  int? position;
+  DateTime? referenceDate;
   List<String> datesWithEnteries = [];
-  Color white;
-  Color accent;
-  Color black;
-  double padding;
-  bool fullCalendar;
-  bool backButton;
+  Color? white;
+  Color? accent;
+  Color? black;
+  double? padding;
+  bool? fullCalendar;
+  bool? backButton;
 
+  //intializing values of atributes which were not defined by user
   @override
   void initState() {
     setState(() {
@@ -70,18 +82,21 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
       position = 1;
     });
-
+    //changing event list to specific form
     if (widget.events != null) {
-      for (var element in widget.events) {
+      for (var element in widget.events!) {
         datesWithEnteries.add(element.toString().split(" ").first);
       }
     }
     super.initState();
   }
 
+  //definition of scroll controller
   ScrollController scrollController = new ScrollController();
+
   @override
   Widget build(BuildContext context) {
+    //changing all dates to correct form for easier
     DateTime first = DateTime.parse(
         "${widget.firstDate.toString().split(" ").first} 00:00:00.000");
     DateTime last = DateTime.parse(
@@ -93,18 +108,22 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
         (index) => basicDate.add(Duration(days: index)));
     pastDates.sort((b, a) => a.compareTo(b));
     Widget calendarView() {
+      //Ui for calendar scrollview
       return Container(
         width: MediaQuery.of(context).size.width,
         height: 145.0,
         alignment: Alignment.bottomCenter,
         child: NotificationListener(
-          onNotification: (notification) {
+          onNotification: (dynamic notification) {
+            //scrolling mechanism defined
             double width = MediaQuery.of(context).size.width;
             double widthUnit = width / 5 - 4.0;
             double offset = scrollController.offset;
 
             if (notification is UserScrollNotification &&
                 notification.direction == ScrollDirection.idle &&
+                // ignore_for_file: invalid_use_of_visible_for_testing_member
+                // ignore_for_file: invalid_use_of_protected_member
                 scrollController.position.activity is! HoldScrollActivity) {
               if (offset > 0) {
                 scrollController.animateTo(
@@ -122,24 +141,25 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                 });
               }
             }
-
-            if (offset > position * widthUnit - (widthUnit / 2)) {
+            //adding hapric feedback in the future
+            if (offset > position! * widthUnit - (widthUnit / 2)) {
               setState(() {
-                position++;
-                selectedDate = selectedDate.subtract(Duration(days: 1));
+                position = position! + 1;
+                selectedDate = selectedDate!.subtract(Duration(days: 1));
                 //HapticFeedback.lightImpact();
               });
             } else if (offset + width <
-                position * widthUnit - (widthUnit / 2)) {
+                position! * widthUnit - (widthUnit / 2)) {
               setState(() {
-                position--;
-                selectedDate = selectedDate.add(Duration(days: 1));
+                position = position! - 1;
+                selectedDate = selectedDate!.add(Duration(days: 1));
                 //HapticFeedback.lightImpact();
               });
             }
 
             return true;
           },
+          //UI for calendar scrollview
           child: ListView.builder(
               padding: pastDates.length < 5
                   ? EdgeInsets.symmetric(
@@ -155,12 +175,14 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
               ),
               itemCount: pastDates.length,
               itemBuilder: (context, index) {
+                //definition of variables
                 DateTime date = pastDates[index];
                 bool isSelected = position == index + 1;
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: GestureDetector(
+                    //if pressed on specific date, set it as selected
                     onTap: () {
                       setState(() {
                         selectedDate = date;
@@ -169,6 +191,8 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                       });
                       widget.onDateChanged(selectedDate);
                     },
+                    //different UI for nonselected containers and the selected ones
+                    //this is the definition of the main container of calendar card
                     child: Container(
                       width: MediaQuery.of(context).size.width / 5 - 4.0,
                       child: Align(
@@ -198,9 +222,11 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                       )
                               ],
                             ),
+                            //definition of content inside of calendar card
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                //indicators of event on specific date
                                 datesWithEnteries.contains(
                                         date.toString().split(" ").first)
                                     ? Container(
@@ -210,30 +236,32 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                           shape: BoxShape.circle,
                                           color: isSelected
                                               ? accent
-                                              : white.withOpacity(0.6),
+                                              : white!.withOpacity(0.6),
                                         ),
                                       )
                                     : SizedBox(
                                         height: 5.0,
                                       ),
                                 SizedBox(height: 10),
+                                //date number
                                 Text(
                                   DateFormat("dd").format(date),
                                   style: TextStyle(
                                       fontSize: 22.0,
                                       color: isSelected
                                           ? accent
-                                          : white.withOpacity(0.6),
+                                          : white!.withOpacity(0.6),
                                       fontWeight: FontWeight.w500),
                                 ),
                                 SizedBox(height: 5),
+                                //day of the week
                                 Text(
                                   DateFormat("E").format(date),
                                   style: TextStyle(
                                       fontSize: 12.0,
                                       color: isSelected
                                           ? accent
-                                          : white.withOpacity(0.6),
+                                          : white!.withOpacity(0.6),
                                       fontWeight: FontWeight.w400),
                                 ),
                               ],
@@ -249,6 +277,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       );
     }
 
+    //this function show full calendar view currently shown as modal bottom sheet
     showFullCalendar() {
       showModalBottomSheet<void>(
         context: context,
@@ -260,19 +289,20 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
         ),
         builder: (BuildContext context) {
           double height;
-          DateTime endDate =
+          DateTime? endDate =
               widget.lastDate == null ? DateTime.now() : widget.lastDate;
 
-          if (widget.firstDate.year == endDate.year &&
+          if (widget.firstDate.year == endDate!.year &&
               widget.firstDate.month == endDate.month) {
             height =
-                ((MediaQuery.of(context).size.width - 2 * padding) / 7) * 5 +
+                ((MediaQuery.of(context).size.width - 2 * padding!) / 7) * 5 +
                     150.0;
           } else {
             height = (MediaQuery.of(context).size.height - 100.0);
           }
           return Container(
             height: height,
+            //usage of full calender widget, which is defined below
             child: FullCalendar(
               height: height,
               startDate: widget.firstDate,
@@ -284,24 +314,29 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
               events: datesWithEnteries,
               selectedDate: referenceDate,
               onDateChange: (value) {
+                //systematics of selecting specific date
                 //HapticFeedback.lightImpact();
+
+                //hide modal bottom sheet
                 Navigator.pop(context);
+                //define new variables
                 DateTime referentialDate = DateTime.parse(
                     "${value.toString().split(" ").first} 12:00:00.000");
-
-                int oldPosition;
-                int positionDifference;
+                int? oldPosition;
+                late int positionDifference;
+                //calculate new position of scrollview
                 setState(() {
                   oldPosition = position;
                   positionDifference =
-                      -((referentialDate.difference(referenceDate).inHours / 24)
+                      -((referentialDate.difference(referenceDate!).inHours /
+                              24)
                           .round());
                 });
 
                 double offset = scrollController.offset;
 
                 double widthUnit = MediaQuery.of(context).size.width / 5 - 4.0;
-
+                //wait to modal bottom sheet to hide
                 Future.delayed(Duration(milliseconds: 100), () {
                   double maxOffset = scrollController.position.maxScrollExtent;
                   double minOffset = 0.0;
@@ -311,7 +346,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                   if (newOffset > maxOffset)
                     newOffset = maxOffset;
                   else if (newOffset < minOffset) newOffset = minOffset;
-
+                  //scroll the calendar scroller to the selected date
                   scrollController.animateTo(newOffset,
                       duration: Duration(milliseconds: 500),
                       curve: Curves.easeInOut);
@@ -320,7 +355,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                     setState(() {
                       selectedDate = value;
                       referenceDate = selectedDate;
-                      position = oldPosition + positionDifference;
+                      position = oldPosition! + positionDifference;
                     });
                   });
                 });
@@ -333,9 +368,11 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       );
     }
 
+    //UI of the whole appbar
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 240.0,
+      //it is based on stack of widgets
       child: Stack(
         children: [
           Positioned(
@@ -349,10 +386,10 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
           Positioned(
               top: 59.0,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: padding),
+                padding: EdgeInsets.symmetric(horizontal: padding!),
                 child: Container(
-                  width: MediaQuery.of(context).size.width - (padding * 2),
-                  child: backButton
+                  width: MediaQuery.of(context).size.width - (padding! * 2),
+                  child: backButton!
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -364,9 +401,9 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                 onTap: () => Navigator.pop(context)),
                             GestureDetector(
                               onTap: () =>
-                                  fullCalendar ? showFullCalendar() : null,
+                                  fullCalendar! ? showFullCalendar() : null,
                               child: Text(
-                                DateFormat("MMMM y").format(selectedDate),
+                                DateFormat("MMMM y").format(selectedDate!),
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: white,
@@ -380,9 +417,9 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                           children: [
                             GestureDetector(
                               onTap: () =>
-                                  fullCalendar ? showFullCalendar() : null,
+                                  fullCalendar! ? showFullCalendar() : null,
                               child: Text(
-                                DateFormat("MMMM y").format(selectedDate),
+                                DateFormat("MMMM y").format(selectedDate!),
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: white,
@@ -395,6 +432,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
               )),
           Positioned(
             bottom: 0.0,
+            // call calendarView function from above
             child: calendarView(),
           ),
         ],
@@ -403,41 +441,43 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
   }
 }
 
+//definition of full calendar shown in modal bottom sheet
 class FullCalendar extends StatefulWidget {
+  //same variables as in CalendarAppBar class
   final DateTime startDate;
-  final DateTime endDate;
-  final DateTime selectedDate;
-  final Color black;
-  final Color accent;
-  final Color white;
-  final double padding;
-  final double height;
+  final DateTime? endDate;
+  final DateTime? selectedDate;
+  final Color? black;
+  final Color? accent;
+  final Color? white;
+  final double? padding;
+  final double? height;
 
-  final List<String> events;
+  final List<String>? events;
   final Function onDateChange;
 
   FullCalendar(
-      {Key key,
+      {Key? key,
       this.accent,
       this.endDate,
-      @required this.startDate,
-      @required this.padding,
+      required this.startDate,
+      required this.padding,
       this.events,
       this.black,
       this.white,
       this.height,
       this.selectedDate,
-      @required this.onDateChange})
+      required this.onDateChange})
       : super(key: key);
   @override
   _FullCalendarState createState() => _FullCalendarState();
 }
 
 class _FullCalendarState extends State<FullCalendar> {
-  DateTime endDate;
-  DateTime startDate;
-  List<String> events = [];
-
+  late DateTime endDate;
+  late DateTime startDate;
+  List<String>? events = [];
+  //transforming variables to correct form
   void initState() {
     setState(() {
       startDate = DateTime.parse(
@@ -451,6 +491,7 @@ class _FullCalendarState extends State<FullCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    //transforming variables to correct form
     List<String> partsStart = startDate.toString().split(" ").first.split("-");
     DateTime firstDate = DateTime.parse(
         "${partsStart.first}-${partsStart[1].padLeft(2, '0')}-01 00:00:00.000");
@@ -459,10 +500,10 @@ class _FullCalendarState extends State<FullCalendar> {
             "${partsEnd.first}-${(int.parse(partsEnd[1]) + 1).toString().padLeft(2, '0')}-01 23:00:00.000")
         .subtract(Duration(days: 1));
 
-    double width = MediaQuery.of(context).size.width - (2 * widget.padding);
-    List<DateTime> dates = [];
+    double width = MediaQuery.of(context).size.width - (2 * widget.padding!);
+    List<DateTime?> dates = [];
     DateTime referenceDate = firstDate;
-
+    //creating list for calendar matrix
     while (referenceDate.isBefore(lastDate)) {
       List<String> referenceParts = referenceDate.toString().split(" ");
       DateTime newDate = DateTime.parse("${referenceParts.first} 12:00:00.000");
@@ -473,29 +514,32 @@ class _FullCalendarState extends State<FullCalendar> {
 
     if (firstDate.year == lastDate.year && firstDate.month == lastDate.month) {
       return Padding(
-        padding: EdgeInsets.fromLTRB(widget.padding, 40.0, widget.padding, 0.0),
+        padding:
+            EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
         child: month(dates, width),
       );
     } else {
-      List<DateTime> months = [];
+      List<DateTime?> months = [];
       for (int i = 0; i < dates.length; i++) {
-        if (i == 0 || (dates[i].month != dates[i - 1].month)) {
+        if (i == 0 || (dates[i]!.month != dates[i - 1]!.month)) {
           months.add(dates[i]);
         }
       }
-      months.sort((b, a) => a.compareTo(b));
+      months.sort((b, a) => a!.compareTo(b!));
       return Padding(
-        padding: EdgeInsets.fromLTRB(widget.padding, 40.0, widget.padding, 0.0),
+        padding:
+            EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
         child: Container(
+          //scrolling of calendar
           child: ListView.builder(
               physics: BouncingScrollPhysics(),
               reverse: true,
               itemCount: months.length,
               itemBuilder: (context, index) {
-                DateTime date = months[index];
-                List<DateTime> daysOfMonth = [];
+                DateTime? date = months[index];
+                List<DateTime?> daysOfMonth = [];
                 for (var item in dates) {
-                  if (date.month == item.month && date.year == item.year) {
+                  if (date!.month == item!.month && date.year == item.year) {
                     daysOfMonth.add(item);
                   }
                 }
@@ -511,6 +555,7 @@ class _FullCalendarState extends State<FullCalendar> {
     }
   }
 
+  //definiton of week
   Widget daysOfWeek(double width) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -526,6 +571,7 @@ class _FullCalendarState extends State<FullCalendar> {
     );
   }
 
+  //definition of day widget
   Widget dayName(double width, String text) {
     return Container(
       width: width,
@@ -535,11 +581,12 @@ class _FullCalendarState extends State<FullCalendar> {
         style: TextStyle(
             fontSize: 12.0,
             fontWeight: FontWeight.w400,
-            color: widget.black.withOpacity(0.8)),
+            color: widget.black!.withOpacity(0.8)),
       ),
     );
   }
 
+  //definition of date in Calendar widget
   Widget dateInCalendar(
       DateTime date, bool outOfRange, double width, bool event) {
     bool isSelectedDate = date.toString().split(" ").first ==
@@ -565,15 +612,19 @@ class _FullCalendarState extends State<FullCalendar> {
                 child: Text(
                   DateFormat("dd").format(date),
                   style: TextStyle(
+                      //UI of full calendar shows also the dates that are out
+                      //of the range defined by first and last date, although
+                      //the UI is different for the dates out of range
                       color: outOfRange
                           ? isSelectedDate
-                              ? widget.white.withOpacity(0.9)
-                              : widget.black.withOpacity(0.4)
+                              ? widget.white!.withOpacity(0.9)
+                              : widget.black!.withOpacity(0.4)
                           : isSelectedDate
                               ? widget.white
                               : widget.black),
                 ),
               ),
+              //if there is an event on the specific date, UI will show dot in accent color
               event
                   ? Container(
                       height: 5.0,
@@ -590,17 +641,20 @@ class _FullCalendarState extends State<FullCalendar> {
     );
   }
 
+  //definition of month widget
+
   Widget month(List dates, double width) {
     DateTime first = dates.first;
     while (DateFormat("E").format(dates.first) != "Mon") {
       dates.add(dates.first.subtract(Duration(days: 1)));
       dates.sort();
     }
-
+    //logically show all the dates in the month
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          //name of the month
           Text(
             DateFormat("MMMM y").format(first),
             style: TextStyle(
@@ -615,12 +669,14 @@ class _FullCalendarState extends State<FullCalendar> {
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: Container(
+              //calculate the number of rows with dates based on number of days in the month
               height: dates.length > 28
                   ? dates.length > 35
                       ? 6 * width / 7
                       : 5 * width / 7
                   : 4 * width / 7,
-              width: MediaQuery.of(context).size.width - 2 * widget.padding,
+              width: MediaQuery.of(context).size.width - 2 * widget.padding!,
+              //show all days in the month
               child: GridView.builder(
                 itemCount: dates.length,
                 physics: NeverScrollableScrollPhysics(),
@@ -641,7 +697,7 @@ class _FullCalendarState extends State<FullCalendar> {
                       date,
                       outOfRange,
                       width,
-                      events.contains(date.toString().split(" ").first) &&
+                      events!.contains(date.toString().split(" ").first) &&
                           !outOfRange,
                     );
                   }
@@ -654,3 +710,5 @@ class _FullCalendarState extends State<FullCalendar> {
     );
   }
 }
+
+//end of code
