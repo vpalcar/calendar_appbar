@@ -1,3 +1,7 @@
+## [0.0.3] - 2021/06/28
+
+* Bug fixes and documentation improvements
+
 ## [0.0.2] - 2021/06/28
 
 * Migration to null safty
