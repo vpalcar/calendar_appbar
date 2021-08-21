@@ -3,7 +3,10 @@ library calendar_appbar;
 ///adding necesarry packages
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+
+enum WeekDay { short, long }
 
 ///Code starts here
 class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -37,6 +40,12 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
   ///[backButton] shows BackButton in set to true
   final bool? backButton;
 
+  ///definiton of the calendar language
+  final String? locale;
+
+  ///definition of days name lenght
+  final WeekDay weekday;
+
   ///initialization of [CalendarAppBar]
   CalendarAppBar({
     Key? key,
@@ -50,6 +59,8 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.white,
     this.black,
     this.padding,
+    this.locale,
+    this.weekday = WeekDay.short,
   }) : super(key: key);
 
   @override
@@ -94,6 +105,9 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
   ///[backButton] shows BackButton in set to true
   bool? backButton;
 
+  String get _locale =>
+      widget.locale ?? Localizations.localeOf(context).languageCode;
+
   ///intializing values of atributes which were not defined by user
   @override
   void initState() {
@@ -127,6 +141,9 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
       ///initializing referenceDate
       referenceDate = selectedDate;
+
+      ///initializing language
+      initializeDateFormatting(_locale);
 
       ///initializing position to 1
       position = 1;
@@ -358,7 +375,12 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
                                 ///day of the week
                                 Text(
-                                  DateFormat("E").format(date),
+                                  widget.weekday == WeekDay.long
+                                      ? DateFormat.EEEE(
+                                              Locale(_locale).toString())
+                                          .format(date)
+                                      : DateFormat.E(Locale(_locale).toString())
+                                          .format(date),
                                   style: TextStyle(
                                       fontSize: 12.0,
                                       color: isSelected
@@ -380,7 +402,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
     }
 
     ///this function show full calendar view currently shown as modal bottom sheet
-    showFullCalendar() {
+    showFullCalendar(String locale, WeekDay weekday) {
       showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
@@ -416,6 +438,8 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
               white: white,
               events: datesWithEnteries,
               selectedDate: referenceDate,
+              locale: locale,
+              weekday: weekday,
               onDateChange: (value) {
                 ///systematics of selecting specific date
                 //HapticFeedback.lightImpact();
@@ -530,10 +554,12 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                 ),
                                 onTap: () => Navigator.pop(context)),
                             GestureDetector(
-                              onTap: () =>
-                                  fullCalendar! ? showFullCalendar() : null,
+                              onTap: () => fullCalendar!
+                                  ? showFullCalendar(_locale, widget.weekday)
+                                  : null,
                               child: Text(
-                                DateFormat("MMMM y").format(selectedDate!),
+                                DateFormat.yMMMM(Locale(_locale).toString())
+                                    .format(selectedDate!),
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: white,
@@ -546,8 +572,9 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap: () =>
-                                  fullCalendar! ? showFullCalendar() : null,
+                              onTap: () => fullCalendar!
+                                  ? showFullCalendar(_locale, widget.weekday)
+                                  : null,
                               child: Text(
                                 DateFormat("MMMM y").format(selectedDate!),
                                 style: TextStyle(
@@ -597,25 +624,33 @@ class FullCalendar extends StatefulWidget {
   ///definition of height
   final double? height;
 
+  ///definition of locale
+  final String? locale;
+
+  ///[WeekDay]definition of weekdat
+  final WeekDay? weekday;
+
   ///list of dates with specific event (shown as a dot above the date)
   final List<String>? events;
 
   ///function which returns currently selected date
   final Function onDateChange;
 
-  FullCalendar(
-      {Key? key,
-      this.accent,
-      this.endDate,
-      required this.startDate,
-      required this.padding,
-      this.events,
-      this.black,
-      this.white,
-      this.height,
-      this.selectedDate,
-      required this.onDateChange})
-      : super(key: key);
+  FullCalendar({
+    Key? key,
+    this.accent,
+    this.endDate,
+    required this.startDate,
+    required this.padding,
+    this.events,
+    this.black,
+    this.white,
+    this.height,
+    this.locale,
+    this.selectedDate,
+    required this.onDateChange,
+    this.weekday,
+  }) : super(key: key);
   @override
   _FullCalendarState createState() => _FullCalendarState();
 }
@@ -690,7 +725,7 @@ class _FullCalendarState extends State<FullCalendar> {
       return Padding(
         padding:
             EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
-        child: month(dates, width),
+        child: month(dates, width, widget.locale, widget.weekday),
       );
     } else {
       ///creating the list of the month in the range
@@ -726,7 +761,8 @@ class _FullCalendarState extends State<FullCalendar> {
 
                 return Padding(
                   padding: EdgeInsets.only(bottom: isLast ? 0.0 : 25.0),
-                  child: month(daysOfMonth, width),
+                  child:
+                      month(daysOfMonth, width, widget.locale, widget.weekday),
                 );
               }),
         ),
@@ -735,17 +771,27 @@ class _FullCalendarState extends State<FullCalendar> {
   }
 
   ///definiton of week row that shows the day of the week for specific week
-  Widget daysOfWeek(double width) {
+  Widget daysOfWeek(double width, String? locale, WeekDay? weekday) {
+    List daysNames = [];
+    for (var day = 12; day <= 19; day++) {
+      weekday == WeekDay.long
+          ? daysNames.add(DateFormat.EEEE(locale.toString())
+              .format(DateTime.parse('1970-01-' + day.toString())))
+          : daysNames.add(DateFormat.E(locale.toString())
+              .format(DateTime.parse('1970-01-' + day.toString())));
+    }
+    print(daysNames.toString());
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        dayName(width / 7, "Mon"),
-        dayName(width / 7, "Tue"),
-        dayName(width / 7, "Wed"),
-        dayName(width / 7, "Thu"),
-        dayName(width / 7, "Fri"),
-        dayName(width / 7, "Sat"),
-        dayName(width / 7, "Sun"),
+        dayName(width / 7, daysNames[0]),
+        dayName(width / 7, daysNames[1]),
+        dayName(width / 7, daysNames[2]),
+        dayName(width / 7, daysNames[3]),
+        dayName(width / 7, daysNames[4]),
+        dayName(width / 7, daysNames[5]),
+        dayName(width / 7, daysNames[6]),
       ],
     );
   }
@@ -825,7 +871,7 @@ class _FullCalendarState extends State<FullCalendar> {
 
   ///definition of month widget
 
-  Widget month(List dates, double width) {
+  Widget month(List dates, double width, String? locale, WeekDay? weekday) {
     ///definition of first and initializing it on the first date int the month
     DateTime first = dates.first;
     while (DateFormat("E").format(dates.first) != "Mon") {
@@ -843,7 +889,7 @@ class _FullCalendarState extends State<FullCalendar> {
         children: [
           ///name of the month
           Text(
-            DateFormat("MMMM y").format(first),
+            DateFormat.MMMM(Locale(locale!).toString()).format(first),
             style: TextStyle(
                 fontSize: 18.0,
                 color: widget.black,
@@ -851,7 +897,7 @@ class _FullCalendarState extends State<FullCalendar> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 30.0),
-            child: daysOfWeek(width),
+            child: daysOfWeek(width, widget.locale, widget.weekday),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
