@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+// Weekday name type
 enum WeekDay { short, long }
 
 ///Code starts here

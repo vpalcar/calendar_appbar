@@ -38,8 +38,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CalendarAppBar(
-        locale: 'id',
-        weekday: WeekDay.long,
+        locale: 'id', // set locale
+        weekday:
+            WeekDay.long, // weekday name = "WeekDay.show" or "Weekday.long"
         onDateChanged: (value) => setState(() => selectedDate = value),
         firstDate: DateTime.now().subtract(Duration(days: 140)),
         lastDate: DateTime.now(),
