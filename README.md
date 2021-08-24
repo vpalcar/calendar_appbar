@@ -106,10 +106,11 @@ The newest feature the **CalendarAppbar** package is offering is local support f
 ```
 
 ## Thank you
-Special thanks goes to all contributors to this package. Make sure to check them out.
-<a href = "https://github.com/Tanu-N-Prabhu/Python/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo = vpalcar/calendar_appbar"/>
-</a>
+Special thanks goes to all contributors to this package. Make sure to check them out.<br />
+
+<a href="https://github.com/vpalcar/calendar_appbar/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=vpalcar/calendar_appbar" />
+</a><br />
 Make sure to check out [example project](https://github.com/vpalcar/calendar_appbar/tree/master/example).
 If you find this package useful, star my GitHub [repository](https://github.com/vpalcar/calendar_appbar).
 
