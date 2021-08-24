@@ -111,7 +111,7 @@ Special thanks goes to all contributors to this package. Make sure to check them
 <a href="https://github.com/vpalcar/calendar_appbar/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=vpalcar/calendar_appbar" />
 </a>
-<br />
+
 Make sure to check out [example project](https://github.com/vpalcar/calendar_appbar/tree/master/example).
 If you find this package useful, star my GitHub [repository](https://github.com/vpalcar/calendar_appbar).
 
