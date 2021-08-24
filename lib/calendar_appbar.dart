@@ -44,9 +44,6 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
   ///definiton of the calendar language
   final String? locale;
 
-  ///definition of days name lenght
-  final WeekDay weekday;
-
   ///initialization of [CalendarAppBar]
   CalendarAppBar({
     Key? key,
@@ -61,7 +58,6 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.black,
     this.padding,
     this.locale,
-    this.weekday = WeekDay.short,
   }) : super(key: key);
 
   @override
@@ -376,12 +372,8 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
                                 ///day of the week
                                 Text(
-                                  widget.weekday == WeekDay.long
-                                      ? DateFormat.EEEE(
-                                              Locale(_locale).toString())
-                                          .format(date)
-                                      : DateFormat.E(Locale(_locale).toString())
-                                          .format(date),
+                                  DateFormat.E(Locale(_locale).toString())
+                                      .format(date),
                                   style: TextStyle(
                                       fontSize: 12.0,
                                       color: isSelected
@@ -403,7 +395,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
     }
 
     ///this function show full calendar view currently shown as modal bottom sheet
-    showFullCalendar(String locale, WeekDay weekday) {
+    showFullCalendar(String locale) {
       showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
@@ -440,7 +432,6 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
               events: datesWithEnteries,
               selectedDate: referenceDate,
               locale: locale,
-              weekday: weekday,
               onDateChange: (value) {
                 ///systematics of selecting specific date
                 //HapticFeedback.lightImpact();
@@ -556,7 +547,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                 onTap: () => Navigator.pop(context)),
                             GestureDetector(
                               onTap: () => fullCalendar!
-                                  ? showFullCalendar(_locale, widget.weekday)
+                                  ? showFullCalendar(_locale)
                                   : null,
                               child: Text(
                                 DateFormat.yMMMM(Locale(_locale).toString())
@@ -574,7 +565,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                           children: [
                             GestureDetector(
                               onTap: () => fullCalendar!
-                                  ? showFullCalendar(_locale, widget.weekday)
+                                  ? showFullCalendar(_locale)
                                   : null,
                               child: Text(
                                 DateFormat("MMMM y").format(selectedDate!),
@@ -781,7 +772,6 @@ class _FullCalendarState extends State<FullCalendar> {
           : daysNames.add(DateFormat.E(locale.toString())
               .format(DateTime.parse('1970-01-' + day.toString())));
     }
-    print(daysNames.toString());
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

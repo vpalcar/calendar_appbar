@@ -97,7 +97,19 @@ The last attribute of **CalendarAppbar** is `backButton`, which is default set t
     backButton: false,
 ```
 
+### Internationalization
+
+The newest feature the **CalendarAppbar** package is offering is local support for different languages. Use atribute `locale` to customize the language used for the plugin by adding the language code as shown below.
+
+```dart
+    locale: 'en',
+```
+
 ## Thank you
+Special thanks goes to all contributors to this package. Make sure to check them out.
+<a href = "https://github.com/Tanu-N-Prabhu/Python/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo = vpalcar/calendar_appbar"/>
+</a>
 Make sure to check out [example project](https://github.com/vpalcar/calendar_appbar/tree/master/example).
 If you find this package useful, star my GitHub [repository](https://github.com/vpalcar/calendar_appbar).
 

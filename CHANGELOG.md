@@ -1,3 +1,7 @@
+## [0.0.4] - 2021/08/24
+
+* Internationalization of the package
+
 ## [0.0.3] - 2021/06/28
 
 * Bug fixes and documentation improvements
