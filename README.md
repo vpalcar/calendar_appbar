@@ -14,6 +14,7 @@ Flutter package for custom AppBar with calendar view.
 * Enable or disable full-screen calendar view
 * Provide a list of dates that will be marked on the calendar view
 * Manipulate with a range of displayed dates
+* Set the language of your choice
 
 ## Installation and Basic Usage
 

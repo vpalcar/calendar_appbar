@@ -6,9 +6,6 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-// Weekday name type
-enum WeekDay { short, long }
-
 ///Code starts here
 class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
   ///accent color of UI
@@ -619,9 +616,6 @@ class FullCalendar extends StatefulWidget {
   ///definition of locale
   final String? locale;
 
-  ///[WeekDay]definition of weekdat
-  final WeekDay? weekday;
-
   ///list of dates with specific event (shown as a dot above the date)
   final List<String>? events;
 
@@ -641,7 +635,6 @@ class FullCalendar extends StatefulWidget {
     this.locale,
     this.selectedDate,
     required this.onDateChange,
-    this.weekday,
   }) : super(key: key);
   @override
   _FullCalendarState createState() => _FullCalendarState();
@@ -717,7 +710,7 @@ class _FullCalendarState extends State<FullCalendar> {
       return Padding(
         padding:
             EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
-        child: month(dates, width, widget.locale, widget.weekday),
+        child: month(dates, width, widget.locale),
       );
     } else {
       ///creating the list of the month in the range
@@ -753,8 +746,7 @@ class _FullCalendarState extends State<FullCalendar> {
 
                 return Padding(
                   padding: EdgeInsets.only(bottom: isLast ? 0.0 : 25.0),
-                  child:
-                      month(daysOfMonth, width, widget.locale, widget.weekday),
+                  child: month(daysOfMonth, width, widget.locale),
                 );
               }),
         ),
@@ -763,14 +755,11 @@ class _FullCalendarState extends State<FullCalendar> {
   }
 
   ///definiton of week row that shows the day of the week for specific week
-  Widget daysOfWeek(double width, String? locale, WeekDay? weekday) {
+  Widget daysOfWeek(double width, String? locale) {
     List daysNames = [];
     for (var day = 12; day <= 19; day++) {
-      weekday == WeekDay.long
-          ? daysNames.add(DateFormat.EEEE(locale.toString())
-              .format(DateTime.parse('1970-01-' + day.toString())))
-          : daysNames.add(DateFormat.E(locale.toString())
-              .format(DateTime.parse('1970-01-' + day.toString())));
+      daysNames.add(DateFormat.E(locale.toString())
+          .format(DateTime.parse('1970-01-' + day.toString())));
     }
 
     return Row(
@@ -862,7 +851,7 @@ class _FullCalendarState extends State<FullCalendar> {
 
   ///definition of month widget
 
-  Widget month(List dates, double width, String? locale, WeekDay? weekday) {
+  Widget month(List dates, double width, String? locale) {
     ///definition of first and initializing it on the first date int the month
     DateTime first = dates.first;
     while (DateFormat("E").format(dates.first) != "Mon") {
@@ -888,7 +877,7 @@ class _FullCalendarState extends State<FullCalendar> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 30.0),
-            child: daysOfWeek(width, widget.locale, widget.weekday),
+            child: daysOfWeek(width, widget.locale),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
