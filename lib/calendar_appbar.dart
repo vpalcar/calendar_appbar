@@ -18,10 +18,13 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Color? black;
 
   ///the last date shown on the calendar
-  final DateTime? lastDate;
+  final DateTime lastDate;
 
   ///the first date shown on the calendar
   final DateTime firstDate;
+  
+  //the selected date shown on the calendar
+  final DateTime? selectedDate;
 
   ///list of dates with specific event (shown as a dot above the date)
   final List<DateTime>? events;
@@ -47,6 +50,7 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
     required this.lastDate,
     required this.firstDate,
     required this.onDateChanged,
+    this.selectedDate,
     this.events,
     this.fullCalendar,
     this.backButton,
@@ -131,7 +135,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
           : fullCalendar = widget.fullCalendar;
 
       ///initializing selectedDate
-      selectedDate = widget.lastDate;
+      selectedDate = widget.selectedDate ?? widget.lastDate;
 
       ///initializing referenceDate
       referenceDate = selectedDate;
