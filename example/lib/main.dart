@@ -38,9 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CalendarAppBar(
-        locale: 'en',
         onDateChanged: (value) => setState(() => selectedDate = value),
-        firstDate: DateTime.now().subtract(Duration(days: 140)),
         lastDate: DateTime.now(),
         events: List.generate(
             100,

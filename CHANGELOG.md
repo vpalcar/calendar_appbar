@@ -1,3 +1,7 @@
+## [0.0.5] - 2021/11/12
+
+* Loading initial data
+
 ## [0.0.4] - 2021/08/24
 
 * Internationalization of the package

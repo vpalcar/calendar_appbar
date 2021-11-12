@@ -21,8 +21,8 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
   final DateTime lastDate;
 
   ///the first date shown on the calendar
-  final DateTime firstDate;
-  
+  final DateTime? firstDate;
+
   //the selected date shown on the calendar
   final DateTime? selectedDate;
 
@@ -48,7 +48,7 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
   CalendarAppBar({
     Key? key,
     required this.lastDate,
-    required this.firstDate,
+    this.firstDate,
     required this.onDateChanged,
     this.selectedDate,
     this.events,
@@ -59,7 +59,11 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.black,
     this.padding,
     this.locale,
-  }) : super(key: key);
+  }) : super(
+          key: key,
+        ) {
+    firstDate ?? DateTime(1950);
+  }
 
   @override
 
@@ -74,67 +78,67 @@ class CalendarAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CalendarAppBarState extends State<CalendarAppBar> {
   ///defininon of [selectedDate] variable of current selected date
-  DateTime? selectedDate;
+  late DateTime selectedDate;
+
+  ///defininon of [firstDate] variable of current selected date
+  late DateTime firstDate;
 
   ///defininon of [position] variable of current selected calendar card
-  int? position;
+  late int position;
 
   ///definition of the last selected date
-  DateTime? referenceDate;
+  late DateTime referenceDate;
 
   ///list of dates with specific event (shown as a dot above the date)
   List<String> datesWithEnteries = [];
 
   ///definiton of your specific shade of white
-  Color? white;
+  late Color white;
 
   ///accent color of UI
-  Color? accent;
+  late Color accent;
 
   ///definiton of your specific shade of black
-  Color? black;
+  late Color black;
 
   ///definition of your custom padding
-  double? padding;
+  late double padding;
 
   ///definition of the atribute which shows full calendar view when pressing on date
-  bool? fullCalendar;
+  late bool fullCalendar;
 
   ///[backButton] shows BackButton in set to true
-  bool? backButton;
+  late bool backButton;
 
-  String get _locale =>
-      widget.locale ?? Localizations.localeOf(context).languageCode;
+  ///[locale] is used for current local language of the library
+  String get _locale => widget.locale ?? 'en';
 
   ///intializing values of atributes which were not defined by user
   @override
   void initState() {
     setState(() {
       ///initializing accent
-      widget.accent == null
-          ? accent = Color(0xFF0039D9)
-          : accent = widget.accent;
+      accent = widget.accent ?? Color(0xFF0039D9);
+
+      ///initilizing first date
+      firstDate = widget.firstDate ?? DateTime(1950);
 
       ///initializing white
-      widget.white == null ? white = Colors.white : white = widget.white;
+      white = widget.white ?? Colors.white;
 
       ///initializing black
-      widget.black == null ? black = Colors.black87 : black = widget.black;
+      black = widget.black ?? Colors.black87;
 
       ///initializing padding
-      widget.padding == null ? padding = 25.0 : padding = widget.padding;
+      padding = widget.padding ?? 25.0;
 
       ///initializing backbutton
-      widget.backButton == null
-          ? backButton = true
-          : backButton = widget.backButton;
+      backButton = widget.backButton ?? true;
 
       ///initializing fullCalendar
-      widget.fullCalendar == null
-          ? fullCalendar = true
-          : fullCalendar = widget.fullCalendar;
+      fullCalendar = widget.fullCalendar ?? true;
 
-      ///initializing selectedDate
+      ///initializing firstDate
       selectedDate = widget.selectedDate ?? widget.lastDate;
 
       ///initializing referenceDate
@@ -165,8 +169,8 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
     ///changing all dates to correct form for easier
 
     ///intitializing first date and setting it to midnight
-    DateTime first = DateTime.parse(
-        "${widget.firstDate.toString().split(" ").first} 00:00:00.000");
+    DateTime first =
+        DateTime.parse("${firstDate.toString().split(" ").first} 00:00:00.000");
 
     ///intitializing last date and setting it to 11 pm due to the time saving
     DateTime last = DateTime.parse(
@@ -238,13 +242,13 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
             ///if the position of current selected card is out of screen when
             ///scrolling to the left
-            if (offset > position! * widthUnit - (widthUnit / 2)) {
+            if (offset > position * widthUnit - (widthUnit / 2)) {
               setState(() {
                 ///increase position by one
-                position = position! + 1;
+                position = position + 1;
 
                 ///set selectedDate on previous date
-                selectedDate = selectedDate!.subtract(Duration(days: 1));
+                selectedDate = selectedDate.subtract(Duration(days: 1));
 
                 ///adding hapric feedback in the future
                 //HapticFeedback.lightImpact();
@@ -253,13 +257,13 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
             ///if the position of current selected card is out of screen when
             ///scrolling to the right
-            else if (offset + width < position! * widthUnit - (widthUnit / 2)) {
+            else if (offset + width < position * widthUnit - (widthUnit / 2)) {
               setState(() {
                 ///decrease position by one
-                position = position! - 1;
+                position = position - 1;
 
                 ///set selectedDate on previous date
-                selectedDate = selectedDate!.add(Duration(days: 1));
+                selectedDate = selectedDate.add(Duration(days: 1));
 
                 ///adding hapric feedback in the future
                 //HapticFeedback.lightImpact();
@@ -351,7 +355,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                           shape: BoxShape.circle,
                                           color: isSelected
                                               ? accent
-                                              : white!.withOpacity(0.6),
+                                              : white.withOpacity(0.6),
                                         ),
                                       )
                                     : SizedBox(
@@ -366,7 +370,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                       fontSize: 22.0,
                                       color: isSelected
                                           ? accent
-                                          : white!.withOpacity(0.6),
+                                          : white.withOpacity(0.6),
                                       fontWeight: FontWeight.w500),
                                 ),
                                 SizedBox(height: 5),
@@ -379,7 +383,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                       fontSize: 12.0,
                                       color: isSelected
                                           ? accent
-                                          : white!.withOpacity(0.6),
+                                          : white.withOpacity(0.6),
                                       fontWeight: FontWeight.w400),
                                 ),
                               ],
@@ -407,13 +411,12 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
         ),
         builder: (BuildContext context) {
           double height;
-          DateTime? endDate =
-              widget.lastDate == null ? DateTime.now() : widget.lastDate;
+          DateTime? endDate = widget.lastDate;
 
-          if (widget.firstDate.year == endDate!.year &&
-              widget.firstDate.month == endDate.month) {
+          if (firstDate.year == endDate.year &&
+              firstDate.month == endDate.month) {
             height =
-                ((MediaQuery.of(context).size.width - 2 * padding!) / 7) * 5 +
+                ((MediaQuery.of(context).size.width - 2 * padding) / 7) * 5 +
                     150.0;
           } else {
             height = (MediaQuery.of(context).size.height - 100.0);
@@ -424,7 +427,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
             ///usage of full calender widget, which is defined below
             child: FullCalendar(
               height: height,
-              startDate: widget.firstDate,
+              startDate: firstDate,
               endDate: endDate,
               padding: padding,
               accent: accent,
@@ -457,8 +460,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
                   ///counting the difference between dates
                   positionDifference =
-                      -((referentialDate.difference(referenceDate!).inHours /
-                              24)
+                      -((referentialDate.difference(referenceDate).inHours / 24)
                           .round());
                 });
 
@@ -533,10 +535,10 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
           Positioned(
               top: 59.0,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: padding!),
+                padding: EdgeInsets.symmetric(horizontal: padding),
                 child: Container(
-                  width: MediaQuery.of(context).size.width - (padding! * 2),
-                  child: backButton!
+                  width: MediaQuery.of(context).size.width - (padding * 2),
+                  child: backButton
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -547,12 +549,12 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                 ),
                                 onTap: () => Navigator.pop(context)),
                             GestureDetector(
-                              onTap: () => fullCalendar!
+                              onTap: () => fullCalendar
                                   ? showFullCalendar(_locale)
                                   : null,
                               child: Text(
                                 DateFormat.yMMMM(Locale(_locale).toString())
-                                    .format(selectedDate!),
+                                    .format(selectedDate),
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: white,
@@ -565,11 +567,11 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap: () => fullCalendar!
+                              onTap: () => fullCalendar
                                   ? showFullCalendar(_locale)
                                   : null,
                               child: Text(
-                                DateFormat("MMMM y").format(selectedDate!),
+                                DateFormat("MMMM y").format(selectedDate),
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: white,
@@ -600,6 +602,8 @@ class FullCalendar extends StatefulWidget {
 
   ///the last date shown on the calendar
   final DateTime? endDate;
+
+  ///currently selected date
   final DateTime? selectedDate;
 
   ///definiton of your specific shade of black

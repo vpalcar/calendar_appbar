@@ -22,7 +22,7 @@ Add to pubspec.yaml:
 
 ```yaml
 dependencies:
-  calendar_appbar: ^0.0.3
+  calendar_appbar: ^0.0.5
 ```
 
 Then import it to your project:
@@ -100,7 +100,7 @@ The last attribute of **CalendarAppbar** is `backButton`, which is default set t
 
 ### Internationalization
 
-The newest feature the **CalendarAppbar** package is offering is local support for different languages. Use atribute `locale` to customize the language used for the plugin by adding the language code as shown below.
+The newest feature the **CalendarAppbar** package is offering is local support for different languages. Use atribute `locale` to customize the language used for the plugin by adding the language code as shown below. If this atribute is not set, English language will be used.
 
 ```dart
     locale: 'en',
