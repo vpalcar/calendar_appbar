@@ -571,7 +571,8 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                   ? showFullCalendar(_locale)
                                   : null,
                               child: Text(
-                                DateFormat("MMMM y").format(selectedDate),
+                                DateFormat.yMMMM(Locale(_locale).toString())
+                                    .format(selectedDate),
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: white,
