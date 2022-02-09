@@ -1,3 +1,7 @@
+## [0.0.] - 2022/02/09
+
+* Localization error resolved
+
 ## [0.0.5] - 2021/11/12
 
 * Loading initial data
