@@ -1,4 +1,4 @@
-## [0.0.] - 2022/02/09
+## [0.0.6] - 2022/02/09
 
 * Localization error resolved
 
