@@ -148,7 +148,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       initializeDateFormatting(_locale);
 
       ///initializing position to 1
-      position = 1;
+      position = widget.lastDate.difference(selectedDate).inDays + 2;
     });
 
     ///changing event list to specific form
@@ -166,24 +166,31 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      double widthUnit = MediaQuery.of(context).size.width / 5 - 4.0;
+
+      if (position > 4) {
+        scrollController.animateTo(
+          widthUnit * (position - 4),
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
     ///changing all dates to correct form for easier
 
     ///intitializing first date and setting it to midnight
-    DateTime first =
-        DateTime.parse("${firstDate.toString().split(" ").first} 00:00:00.000");
+    DateTime first = DateTime.parse("${firstDate.toString().split(" ").first} 00:00:00.000");
 
     ///intitializing last date and setting it to 11 pm due to the time saving
-    DateTime last = DateTime.parse(
-        "${widget.lastDate.toString().split(" ").first} 23:00:00.000");
+    DateTime last = DateTime.parse("${widget.lastDate.toString().split(" ").first} 23:00:00.000");
 
     ///creating date for List generation
-    DateTime basicDate =
-        DateTime.parse("${first.toString().split(" ").first} 12:00:00.000");
+    DateTime basicDate = DateTime.parse("${first.toString().split(" ").first} 12:00:00.000");
 
     ///List of all dates that will be shown in scroller
-    List<DateTime> pastDates = List.generate(
-        (last.difference(first).inHours / 24).round(),
-        (index) => basicDate.add(Duration(days: index)));
+    List<DateTime> pastDates = List.generate((last.difference(first).inHours / 24).round(), (index) => basicDate.add(Duration(days: index)));
 
     ///Sorting dates in descending order
     pastDates.sort((b, a) => a.compareTo(b));
@@ -219,16 +226,12 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
               ///so all five date cards are fully visible on the screen
               if (offset > 0) {
                 //animated scroll
-                scrollController.animateTo(
-                    (offset / widthUnit).round() * (widthUnit),
-                    duration: Duration(milliseconds: 100),
-                    curve: Curves.easeInOut);
+                scrollController.animateTo((offset / widthUnit).round() * (widthUnit), duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
               }
 
               ///compare last last selected date with curren selected date
               ///if date has changed return new selected date
-              if (referenceDate.toString().split(" ").first !=
-                  selectedDate.toString().split(" ").first) {
+              if (referenceDate.toString().split(" ").first != selectedDate.toString().split(" ").first) {
                 ///wait that animation is finnished and than call function [onDateChange]
                 Future.delayed(Duration(milliseconds: 100), () {
                   widget.onDateChanged(selectedDate);
@@ -275,12 +278,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
           ///UI for calendar scrollview
           child: ListView.builder(
-              padding: pastDates.length < 5
-                  ? EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width *
-                          (5 - pastDates.length) /
-                          10)
-                  : const EdgeInsets.symmetric(horizontal: 10),
+              padding: pastDates.length < 5 ? EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * (5 - pastDates.length) / 10) : const EdgeInsets.symmetric(horizontal: 10),
               scrollDirection: Axis.horizontal,
               reverse: true,
               controller: scrollController,
@@ -316,8 +314,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                       child: Align(
                         alignment: Alignment.center,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 5.0),
+                          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
                           child: Container(
                             height: 120.0,
                             width: MediaQuery.of(context).size.width / 5 - 4.0,
@@ -346,16 +343,13 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ///indicators of event on specific date
-                                datesWithEnteries.contains(
-                                        date.toString().split(" ").first)
+                                datesWithEnteries.contains(date.toString().split(" ").first)
                                     ? Container(
                                         width: 5.0,
                                         height: 5.0,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: isSelected
-                                              ? accent
-                                              : white.withOpacity(0.6),
+                                          color: isSelected ? accent : white.withOpacity(0.6),
                                         ),
                                       )
                                     : SizedBox(
@@ -366,25 +360,14 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                 ///date number
                                 Text(
                                   DateFormat("dd").format(date),
-                                  style: TextStyle(
-                                      fontSize: 22.0,
-                                      color: isSelected
-                                          ? accent
-                                          : white.withOpacity(0.6),
-                                      fontWeight: FontWeight.w500),
+                                  style: TextStyle(fontSize: 22.0, color: isSelected ? accent : white.withOpacity(0.6), fontWeight: FontWeight.w500),
                                 ),
                                 SizedBox(height: 5),
 
                                 ///day of the week
                                 Text(
-                                  DateFormat.E(Locale(_locale).toString())
-                                      .format(date),
-                                  style: TextStyle(
-                                      fontSize: 12.0,
-                                      color: isSelected
-                                          ? accent
-                                          : white.withOpacity(0.6),
-                                      fontWeight: FontWeight.w400),
+                                  DateFormat.E(Locale(_locale).toString()).format(date),
+                                  style: TextStyle(fontSize: 12.0, color: isSelected ? accent : white.withOpacity(0.6), fontWeight: FontWeight.w400),
                                 ),
                               ],
                             ),
@@ -406,18 +389,14 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
         isScrollControlled: true,
         backgroundColor: white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
         ),
         builder: (BuildContext context) {
           double height;
           DateTime? endDate = widget.lastDate;
 
-          if (firstDate.year == endDate.year &&
-              firstDate.month == endDate.month) {
-            height =
-                ((MediaQuery.of(context).size.width - 2 * padding) / 7) * 5 +
-                    150.0;
+          if (firstDate.year == endDate.year && firstDate.month == endDate.month) {
+            height = ((MediaQuery.of(context).size.width - 2 * padding) / 7) * 5 + 150.0;
           } else {
             height = (MediaQuery.of(context).size.height - 100.0);
           }
@@ -444,8 +423,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                 Navigator.pop(context);
 
                 ///define new variables
-                DateTime referentialDate = DateTime.parse(
-                    "${value.toString().split(" ").first} 12:00:00.000");
+                DateTime referentialDate = DateTime.parse("${value.toString().split(" ").first} 12:00:00.000");
 
                 ///definition of [oldPosition]
                 int? oldPosition;
@@ -459,9 +437,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                   oldPosition = position;
 
                   ///counting the difference between dates
-                  positionDifference =
-                      -((referentialDate.difference(referenceDate).inHours / 24)
-                          .round());
+                  positionDifference = -((referentialDate.difference(referenceDate).inHours / 24).round());
                 });
 
                 ///saving current offset
@@ -479,8 +455,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                   double minOffset = 0.0;
 
                   ///counting current offset based of curren positon
-                  double newOffset =
-                      (offset + (widthUnit * positionDifference));
+                  double newOffset = (offset + (widthUnit * positionDifference));
 
                   ///if current offset is out of bounderies set it to maximal or minimal offset
                   if (newOffset > maxOffset)
@@ -488,9 +463,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                   else if (newOffset < minOffset) newOffset = minOffset;
 
                   ///scroll the calendar scroller to the selected date
-                  scrollController.animateTo(newOffset,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.easeInOut);
+                  scrollController.animateTo(newOffset, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
 
                   ///wait on animation to be finished
                   Future.delayed(Duration(milliseconds: 550), () {
@@ -549,16 +522,10 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                                 ),
                                 onTap: () => Navigator.pop(context)),
                             GestureDetector(
-                              onTap: () => fullCalendar
-                                  ? showFullCalendar(_locale)
-                                  : null,
+                              onTap: () => fullCalendar ? showFullCalendar(_locale) : null,
                               child: Text(
-                                DateFormat.yMMMM(Locale(_locale).toString())
-                                    .format(selectedDate),
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    color: white,
-                                    fontWeight: FontWeight.w400),
+                                DateFormat.yMMMM(Locale(_locale).toString()).format(selectedDate),
+                                style: TextStyle(fontSize: 20.0, color: white, fontWeight: FontWeight.w400),
                               ),
                             ),
                           ],
@@ -567,16 +534,10 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap: () => fullCalendar
-                                  ? showFullCalendar(_locale)
-                                  : null,
+                              onTap: () => fullCalendar ? showFullCalendar(_locale) : null,
                               child: Text(
-                                DateFormat.yMMMM(Locale(_locale).toString())
-                                    .format(selectedDate),
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    color: white,
-                                    fontWeight: FontWeight.w400),
+                                DateFormat.yMMMM(Locale(_locale).toString()).format(selectedDate),
+                                style: TextStyle(fontSize: 20.0, color: white, fontWeight: FontWeight.w400),
                               ),
                             ),
                           ],
@@ -663,12 +624,10 @@ class _FullCalendarState extends State<FullCalendar> {
   void initState() {
     setState(() {
       ///parsing [startDate] String to DateTime
-      startDate = DateTime.parse(
-          "${widget.startDate.toString().split(" ").first} 00:00:00.000");
+      startDate = DateTime.parse("${widget.startDate.toString().split(" ").first} 00:00:00.000");
 
       ///parsing [endDate] String to DateTime
-      endDate = DateTime.parse(
-          "${widget.endDate.toString().split(" ").first} 23:00:00.000");
+      endDate = DateTime.parse("${widget.endDate.toString().split(" ").first} 23:00:00.000");
 
       ///initializing [events]
       events = widget.events != null ? widget.events : null;
@@ -684,16 +643,13 @@ class _FullCalendarState extends State<FullCalendar> {
     List<String> partsStart = startDate.toString().split(" ").first.split("-");
 
     ///parsing [partsStart] List of Strings to DateTime
-    DateTime firstDate = DateTime.parse(
-        "${partsStart.first}-${partsStart[1].padLeft(2, '0')}-01 00:00:00.000");
+    DateTime firstDate = DateTime.parse("${partsStart.first}-${partsStart[1].padLeft(2, '0')}-01 00:00:00.000");
 
     ///creating List of parts [partsEnd] of DateTime String format
     List<String> partsEnd = endDate.toString().split(" ").first.split("-");
 
     ///parsing [partsStart] List of Strings to DateTime
-    DateTime lastDate = DateTime.parse(
-            "${partsEnd.first}-${(int.parse(partsEnd[1]) + 1).toString().padLeft(2, '0')}-01 23:00:00.000")
-        .subtract(Duration(days: 1));
+    DateTime lastDate = DateTime.parse("${partsEnd.first}-${(int.parse(partsEnd[1]) + 1).toString().padLeft(2, '0')}-01 23:00:00.000").subtract(Duration(days: 1));
 
     ///calculating the height based of the screen height
     double width = MediaQuery.of(context).size.width - (2 * widget.padding!);
@@ -717,8 +673,7 @@ class _FullCalendarState extends State<FullCalendar> {
     ///check if range is in the same month
     if (firstDate.year == lastDate.year && firstDate.month == lastDate.month) {
       return Padding(
-        padding:
-            EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
+        padding: EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
         child: month(dates, width, widget.locale),
       );
     } else {
@@ -733,8 +688,7 @@ class _FullCalendarState extends State<FullCalendar> {
       ///sort months
       months.sort((b, a) => a!.compareTo(b!));
       return Padding(
-        padding:
-            EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
+        padding: EdgeInsets.fromLTRB(widget.padding!, 40.0, widget.padding!, 0.0),
         child: Container(
           ///scrolling of calendar
           child: ListView.builder(
@@ -767,8 +721,7 @@ class _FullCalendarState extends State<FullCalendar> {
   Widget daysOfWeek(double width, String? locale) {
     List daysNames = [];
     for (var day = 12; day <= 19; day++) {
-      daysNames.add(DateFormat.E(locale.toString())
-          .format(DateTime.parse('1970-01-' + day.toString())));
+      daysNames.add(DateFormat.E(locale.toString()).format(DateTime.parse('1970-01-' + day.toString())));
     }
 
     return Row(
@@ -792,29 +745,22 @@ class _FullCalendarState extends State<FullCalendar> {
       alignment: Alignment.center,
       child: Text(
         text,
-        style: TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w400,
-            color: widget.black!.withOpacity(0.8)),
+        style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, color: widget.black!.withOpacity(0.8)),
       ),
     );
   }
 
   ///definition of date in Calendar widget
-  Widget dateInCalendar(
-      DateTime date, bool outOfRange, double width, bool event) {
+  Widget dateInCalendar(DateTime date, bool outOfRange, double width, bool event) {
     ///comparing the date of current building widget with selected widget
-    bool isSelectedDate = date.toString().split(" ").first ==
-        widget.selectedDate.toString().split(" ").first;
+    bool isSelectedDate = date.toString().split(" ").first == widget.selectedDate.toString().split(" ").first;
     return Container(
       child: GestureDetector(
         onTap: () => outOfRange ? null : widget.onDateChange(date),
         child: Container(
           width: width / 7,
           height: width / 7,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isSelectedDate ? widget.accent : Colors.transparent),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: isSelectedDate ? widget.accent : Colors.transparent),
           alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -846,9 +792,7 @@ class _FullCalendarState extends State<FullCalendar> {
                   ? Container(
                       height: 5.0,
                       width: 5.0,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isSelectedDate ? widget.white : widget.accent),
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: isSelectedDate ? widget.white : widget.accent),
                     )
                   : SizedBox(height: 5.0),
             ],
@@ -879,10 +823,7 @@ class _FullCalendarState extends State<FullCalendar> {
           ///name of the month
           Text(
             DateFormat.MMMM(Locale(locale!).toString()).format(first),
-            style: TextStyle(
-                fontSize: 18.0,
-                color: widget.black,
-                fontWeight: FontWeight.w400),
+            style: TextStyle(fontSize: 18.0, color: widget.black, fontWeight: FontWeight.w400),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 30.0),
@@ -905,15 +846,13 @@ class _FullCalendarState extends State<FullCalendar> {
 
                 ///Since each calendar is drawn separatly it shouldn't be scrollable
                 physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 7),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7),
                 itemBuilder: (context, index) {
                   ///create date for each day in the month
                   DateTime date = dates[index];
 
                   ///check if it is empty field
-                  bool outOfRange =
-                      date.isBefore(startDate) || date.isAfter(endDate);
+                  bool outOfRange = date.isBefore(startDate) || date.isAfter(endDate);
 
                   ///if it is empty field return empty container
                   if (date.isBefore(first)) {
@@ -930,8 +869,7 @@ class _FullCalendarState extends State<FullCalendar> {
                       date,
                       outOfRange,
                       width,
-                      events!.contains(date.toString().split(" ").first) &&
-                          !outOfRange,
+                      events!.contains(date.toString().split(" ").first) && !outOfRange,
                     );
                   }
                 },
