@@ -117,7 +117,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       ///initializing accent
       accent = widget.accent ?? Color(0xFF0039D9);
 
-      ///initilizing first date
+      ///initializing first date
       firstDate = widget.firstDate ?? DateTime(1950);
 
       ///initializing white
@@ -135,7 +135,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       ///initializing fullCalendar
       fullCalendar = widget.fullCalendar ?? true;
 
-      ///initializing firstDate
+      ///initializing selectedDate
       selectedDate = widget.lastDate;
 
       ///initializing referenceDate
@@ -145,7 +145,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       initializeDateFormatting(_locale);
 
       ///initializing position to 1
-      position = widget.lastDate.difference(selectedDate).inDays + 2;
+      position = 1;
     });
 
     ///changing event list to specific form
@@ -157,7 +157,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
     }
     super.initState();
 
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
+    SchedulerBinding.instance?.addPostFrameCallback((_) async {
       await Future.delayed(Duration(seconds: 1)).then((_) {
         DateTime referentialDate = DateTime.parse("${DateTime.now().toString().split(" ").first} 12:00:00.000");
 
@@ -225,17 +225,6 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      double widthUnit = MediaQuery.of(context).size.width / 5 - 4.0;
-
-      if (position > 4) {
-        scrollController.animateTo(
-          widthUnit * (position - 4),
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
 
     ///changing all dates to correct form for easier
 
