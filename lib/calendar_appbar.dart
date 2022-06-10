@@ -145,7 +145,7 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
       initializeDateFormatting(_locale);
 
       ///initializing position to 1
-      position = 1;
+      position = widget.lastDate.difference(selectedDate).inDays + 2;
     });
 
     ///changing event list to specific form
@@ -225,6 +225,18 @@ class _CalendarAppBarState extends State<CalendarAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      double widthUnit = MediaQuery.of(context).size.width / 5 - 4.0;
+
+      if (position > 4) {
+        scrollController.animateTo(
+          widthUnit * (position - 4),
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
     ///changing all dates to correct form for easier
 
     ///intitializing first date and setting it to midnight

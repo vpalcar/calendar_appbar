@@ -1,3 +1,7 @@
+## [0.0.7] - 2022/06/10
+
+* Selected date error resolved
+
 ## [0.0.6] - 2022/02/09
 
 * Localization error resolved
